@@ -1,0 +1,1 @@
+export * as TCharacter from './character/character.controller';
