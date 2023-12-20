@@ -1,6 +1,7 @@
-import { useCallback, useState } from 'react';
-import Select from './Select/Select';
-import { SelectOption } from './Select/types';
+import { useMemo, useState, useCallback } from 'react';
+
+import { Select } from '@/app/lib/select';
+import type { SelectTypes } from '@/app/lib/select';
 
 const items = [
   {
@@ -38,10 +39,11 @@ const items = [
 ];
 
 const SelectTestBase = () => {
-  const [selectedItems, setSelectedItems] = useState<SelectOption[]>([]);
+  const [query, setQuery] = useState('');
+  const [selectedItems, setSelectedItems] = useState<SelectTypes.Item[]>([]);
 
   const onChange = useCallback(
-    (item: SelectOption) => {
+    (item: SelectTypes.Item) => {
       const index = selectedItems.findIndex((x) => x.value === item.value);
 
       if (index === -1) {
@@ -56,8 +58,47 @@ const SelectTestBase = () => {
     [selectedItems]
   );
 
+  const filteredItems = useMemo(() => {
+    const datas: SelectTypes.Item[] = [];
+
+    if (!query) {
+      return items;
+    }
+
+    for (const item of items) {
+      if (item.label.includes(query)) {
+        datas.push(item);
+      }
+    }
+
+    return datas;
+  }, [query]);
+
+  const value = useMemo(
+    () => ({
+      state: {
+        selectedItems,
+        items: filteredItems,
+        search: query,
+      },
+      event: {
+        onChange,
+        setSearch: setQuery,
+      },
+    }),
+    [selectedItems, query, onChange, filteredItems]
+  );
+
   return (
-    <Select items={items} onChange={onChange} selectedItems={selectedItems} />
+    <Select.Root value={value}>
+      <Select.Header>
+        <Select.SelectedItems />
+        <Select.Input />
+      </Select.Header>
+      <Select.Body>
+        <Select.Options />
+      </Select.Body>
+    </Select.Root>
   );
 };
 
