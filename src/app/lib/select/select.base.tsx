@@ -30,7 +30,7 @@ export const Input = () => {
 
   return (
     <input
-      className="w-full border-2 border-gray-200 rounded-md p-2 focus:outline-none focus:border-blue-500"
+      className="flex-1 p-2 focus:outline-none focus:border-blue-500"
       placeholder="Search..."
       onChange={handleSearch}
     />
